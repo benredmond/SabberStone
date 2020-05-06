@@ -40,7 +40,6 @@ namespace SabberStoneCoreAi
 			classMap.Add("ZooDiscardWarlock", CardClass.WARLOCK);
 			classMap.Add("RenoKazakusDragonPriest", CardClass.PRIEST);
 			classMap.Add("MidrangeBuffPaladin", CardClass.PALADIN);
-			// classMap.Add("MurlocDruid", CardClass.DRUID);
 			classMap.Add("MidrangeJadeShaman", CardClass.SHAMAN);
 			classMap.Add("AggroPirateWarrior", CardClass.WARRIOR);
 
@@ -49,7 +48,6 @@ namespace SabberStoneCoreAi
 			deckMap.Add("ZooDiscardWarlock", Decks.ZooDiscardWarlock);
 			deckMap.Add("RenoKazakusDragonPriest", Decks.RenoKazakusDragonPriest);
 			deckMap.Add("MidrangeBuffPaladin", Decks.MidrangeBuffPaladin);
-			// deckMap.Add("MurlocDruid", Decks.MurlocDruid);
 			deckMap.Add("MidrangeJadeShaman", Decks.MidrangeJadeShaman);
 			deckMap.Add("AggroPirateWarrior", Decks.AggroPirateWarrior);
 
@@ -90,7 +88,7 @@ namespace SabberStoneCoreAi
 				};
 
 				AbstractAgent player1 = new GreedyAgent();
-				AbstractAgent player2 = new TestAgent(weights);
+				AbstractAgent player2 = new NNAgent(weights);
 				Console.WriteLine("Game " + i + " " + p1Deck + " " + p2Deck);		
 				var gameHandler = new POGameHandler(gameConfig, player1, player2, repeatDraws:false);
 				gameHandler.PlayGames(nr_of_games:1, addResultToGameStats:true, debug:false);
@@ -107,11 +105,11 @@ namespace SabberStoneCoreAi
 
 		private static void runSimulation(Dictionary<string, CardClass> classMap, Dictionary<string, List<Card>> deckMap, List<string> deckList) {
 			int numGames = 3000;
+			Random r = new Random();
 			Console.WriteLine("Simulate Games");
 
 			List<List<double>> games = new List<List<double>>();
 			for (int i = 0; i < numGames; i++) {
-				Random r = new Random();
 				double max = 10;
 				double min = -10;
 				List<double> randWeights = 
@@ -124,7 +122,7 @@ namespace SabberStoneCoreAi
 
 				var gameConfig = new GameConfig()
 				{
-					StartPlayer = 1,
+					StartPlayer = r.Next(2) + 1,
 					Player1HeroClass = classMap.GetValueOrDefault(p1Deck, CardClass.MAGE),
 					Player2HeroClass = classMap.GetValueOrDefault(p2Deck, CardClass.ROGUE),
 					Player1Deck = deckMap.GetValueOrDefault(p1Deck, Decks.RenoKazakusMage),
@@ -135,7 +133,7 @@ namespace SabberStoneCoreAi
 				};
 
 				AbstractAgent player1 = new RandomAgent();
-				AbstractAgent player2 = new TestAgent(randWeights);
+				AbstractAgent player2 = new NNAgent(randWeights);
 				Console.WriteLine("Game " + i + " " + p1Deck + " " + p2Deck);		
 				var gameHandler = new POGameHandler(gameConfig, player1, player2, repeatDraws:false);
 				gameHandler.PlayGames(nr_of_games:1, addResultToGameStats:true, debug:false);
@@ -147,7 +145,7 @@ namespace SabberStoneCoreAi
 			}
 
 			StringBuilder sb = new StringBuilder();
-			if(!File.Exists(@"test.csv")) {
+			if(!File.Exists(@"hsdata.csv")) {
 				sb.Append("HERO_HEALTH_REDUCED,HERO_ATTACK_REDUCED,WEAPON_DURABILITY_REDUCED,MINION_HEALTH_REDUCED,MINION_ATTACK_REDUCED,MINION_KILLED,MINION_APPEARED,SECRET_REMOVED,MANA_REDUCED,M_HEALTH,M_ATTACK,M_HAS_CHARGE,M_HAS_DEAHTRATTLE,M_HAS_DIVINE_SHIELD,M_HAS_LIFE_STEAL,M_HAS_STEALTH,M_HAS_TAUNT,M_HAS_WINDFURY,M_IS_RUSH,M_MANA_COST,M_POISONOUS,M_SILENCED,M_SUMMONED,M_CANT_BE_TARGETED_BY_SPELLS,RESULT\r\n");
 			}
 
@@ -160,8 +158,8 @@ namespace SabberStoneCoreAi
 				sb.AppendLine();
 			}
 			
-			File.AppendAllText(@"test.csv", sb.ToString());
-			Console.WriteLine("Test successful");
+			File.AppendAllText(@"hsdata.csv", sb.ToString());
+			Console.WriteLine("Simulation successful");
 			Console.ReadLine();
 		}
 	}

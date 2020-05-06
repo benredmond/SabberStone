@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace SabberStoneCoreAi.Agent
 {
-    class TestAgent : AbstractAgent
+    class NNAgent : AbstractAgent
     {
         public static string HERO_HEALTH_REDUCED = "HERO_HEALTH_REDUCED";
         public static string HERO_ATTACK_REDUCED = "HERO_ATTACK_REDUCED";
@@ -38,7 +38,7 @@ namespace SabberStoneCoreAi.Agent
         public static string M_CANT_BE_TARGETED_BY_SPELLS = "M_CANT_BE_TARGETED_BY_SPELLS";
 		public Dictionary<string, double> weights = new Dictionary<string, double>();
 
-        public TestAgent(List<double> initWeights)
+        public NNAgent(List<double> initWeights)
         {
             weights[HERO_HEALTH_REDUCED] = initWeights[0];
             weights[HERO_ATTACK_REDUCED] = initWeights[1];
